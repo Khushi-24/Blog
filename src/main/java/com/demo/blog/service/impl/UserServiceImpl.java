@@ -5,6 +5,7 @@ import com.demo.blog.entity.User;
 import com.demo.blog.exceptions.ResourceNotFoundException;
 import com.demo.blog.repository.UserRepository;
 import com.demo.blog.service.UserService;
+import jakarta.annotation.PostConstruct;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.modelmapper.TypeMap;
@@ -26,26 +27,24 @@ public class UserServiceImpl implements UserService {
     @Autowired
     ModelMapper modelMapper;
 
+    @PostConstruct
     private void configureMappings() {
 
-        TypeMap<User, UserDto> propertyMapper = modelMapper.createTypeMap(User.class, UserDto.class);
-        propertyMapper.addMappings(modelMapper -> modelMapper.skip(UserDto :: setUserPassword));
-//        modelMapper.typeMap(User.class, UserDto.class)
-//                .addMappings(mapping -> {
-//                    mapping.map(User::getId, UserDto ::setUserId);
-//                    mapping.map(User::getAbout, UserDto ::setUserAbout);
-//                    mapping.map(User::getEmail, UserDto ::setUserEmail);
-//                    mapping.map(User::getName, UserDto ::setUserName);
-//                });
+        try{
+            TypeMap<User, UserDto> propertyMapper = modelMapper.createTypeMap(User.class, UserDto.class);
+        propertyMapper.addMappings(mapper -> mapper.skip(UserDto :: setUserPassword));
 
-        modelMapper.typeMap(UserDto.class, User.class)
-                .addMappings(mapping -> {
-                    mapping.map(UserDto ::getUserId, User::setId);
-                    mapping.map(UserDto ::getUserAbout, User::setAbout);
-                    mapping.map(UserDto ::getUserEmail, User::setEmail);
-                    mapping.map(UserDto ::getUserPassword, User::setPassword);
-                    mapping.map(UserDto ::getUserName, User::setName);
-                });
+//            PropertyMap<User, UserDto> userMap = new PropertyMap<>() {
+//                protected void configure() {
+//                    skip().setUserPassword(null);
+//                }
+//            };
+//            modelMapper.addMappings(userMap);
+        }catch (Exception e){
+            System.out.println(e.getMessage() + e);
+//            log.error("Error during initialization: " + e.getMessage(), e);
+        }
+
     }
 
     @Override
@@ -104,12 +103,6 @@ public class UserServiceImpl implements UserService {
 
     public User dtoToUser(UserDto userDto){
         User user = modelMapper.map(userDto, User.class);
-
-//        user.setId(userDto.getId());
-//        user.setName(userDto.getName());
-//        user.setAbout(userDto.getAbout());
-//        user.setPassword(userDto.getPassword());
-//        user.setEmail(userDto.getEmail());
         return user;
     }
 
@@ -119,15 +112,4 @@ public class UserServiceImpl implements UserService {
         return userDto;
     }
 
-    /*
-        PropertyMap<User, UserDto> userMap = new PropertyMap<User, UserDto>() {
-            protected void configure() {
-                skip().setPassword(null);
-            }
-        };
-                modelMapper.addMappings(userMap);
-
-        TypeMap<User, UserDto> propertyMapper = modelMapper.createTypeMap(User.class, UserDto.class);
-        propertyMapper.addMappings(modelMapper -> modelMapper.skip(UserDto :: setPassword));
-         */
 }

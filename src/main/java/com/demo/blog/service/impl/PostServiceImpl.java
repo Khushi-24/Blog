@@ -1,5 +1,6 @@
 package com.demo.blog.service.impl;
 
+import com.demo.blog.dto.PaginationResponseDto;
 import com.demo.blog.dto.PostDto;
 import com.demo.blog.entity.Category;
 import com.demo.blog.entity.Post;
@@ -11,6 +12,10 @@ import com.demo.blog.repository.UserRepository;
 import com.demo.blog.service.PostService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -84,11 +89,19 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDto> getAllPost() {
-        List<Post> postList = postRepository.findAll();
-        List<PostDto> postDtoList = postList.stream().map(post ->
+    public PaginationResponseDto<PostDto> getAllPost(int pageNo, int pageSize, String sortBy) {
+        Pageable pageable = PageRequest.of(pageNo,pageSize, Sort.by(sortBy));
+        Page<Post> postList = postRepository.findAll(pageable);
+        List<PostDto> postDtoList = postList.getContent().stream().map(post ->
          entityToDto(post)).collect(Collectors.toList());
-        return postDtoList;
+        PaginationResponseDto paginationResponseDto = new PaginationResponseDto();
+        paginationResponseDto.setContent(postDtoList);
+        paginationResponseDto.setLastPage(postList.isLast());
+        paginationResponseDto.setPageNo(postList.getNumber());
+        paginationResponseDto.setPageSize(postList.getSize());
+        paginationResponseDto.setTotalPages(postList.getTotalPages());
+        paginationResponseDto.setTotalElements(postList.getTotalElements());
+        return paginationResponseDto;
     }
 
     @Override

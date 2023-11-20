@@ -1,5 +1,6 @@
 package com.demo.blog.service;
 
+import com.demo.blog.dto.PaginationResponseDto;
 import com.demo.blog.dto.PostDto;
 
 import java.util.List;
@@ -8,7 +9,7 @@ public interface PostService {
 
     public PostDto createUpdate(PostDto postDto, Long userId, Long categoryId);
 
-    List<PostDto> getAllPost();
+    PaginationResponseDto<PostDto> getAllPost(int pageNo, int pageSize, String sortBy);
 
     void deletePost(Long postId);
 

@@ -1,7 +1,7 @@
 package com.demo.blog.controller;
 
 
-import com.demo.blog.dto.CategoryDto;
+import com.demo.blog.dto.PaginationResponseDto;
 import com.demo.blog.dto.PostDto;
 import com.demo.blog.service.PostService;
 import jakarta.validation.Valid;
@@ -27,9 +27,11 @@ public class PostController {
     }
 
     @GetMapping("/post/getAllPost")
-    public ResponseEntity<?> getAllPosts(){
-        List<PostDto> postDtoList = postService.getAllPost();
-        if (postDtoList.isEmpty()){
+    public ResponseEntity<?> getAllPosts(@RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+                                         @RequestParam(value = "pageSize", defaultValue = "4", required = false) int pageSize,
+                                         @RequestParam(value = "sortBy", defaultValue = "title", required = false) String sortBy){
+        PaginationResponseDto<PostDto> postDtoList = postService.getAllPost(pageNo, pageSize, sortBy);
+        if (postDtoList.getContent().isEmpty()){
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }else
             return new ResponseEntity<>(postDtoList, HttpStatus.OK);

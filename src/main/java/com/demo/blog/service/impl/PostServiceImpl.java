@@ -74,24 +74,21 @@ public class PostServiceImpl implements PostService {
         if(postDto.getId() != null){
            post = postRepository.findById(postDto.getId()).
                     orElseThrow(() -> new ResourceNotFoundException("Post", "id", postDto.getId()));
-           post = dtoToEntity(postDto);
-           post.setUser(user);
-           post.setCategory(category);
-           post.setAddedDate(new Date());
-           postRepository.save(post);
-        }else {
-            post = dtoToEntity(postDto);
-            post.setUser(user);
-            post.setCategory(category);
-            post.setAddedDate(new Date());
-            postRepository.save(post);
         }
+        post = dtoToEntity(postDto);
+        post.setUser(user);
+        post.setCategory(category);
+        post.setAddedDate(new Date());
+        postRepository.save(post);
         return entityToDto(post);
     }
 
     @Override
     public List<PostDto> getAllPost() {
-        return null;
+        List<Post> postList = postRepository.findAll();
+        List<PostDto> postDtoList = postList.stream().map(post ->
+         entityToDto(post)).collect(Collectors.toList());
+        return postDtoList;
     }
 
     @Override
@@ -101,7 +98,9 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostDto getById(Long postId) {
-        return null;
+        Post post = postRepository.findById(postId).
+                orElseThrow(() -> new ResourceNotFoundException("Post", "post id", postId));
+        return entityToDto(post);
     }
 
     @Override

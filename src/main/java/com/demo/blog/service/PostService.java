@@ -18,4 +18,6 @@ public interface PostService {
     List<PostDto> getByCategory(Long categoryId);
 
     List<PostDto> getByUserId(Long userId);
+
+    List<PostDto> findByTitle(String keyword);
 }

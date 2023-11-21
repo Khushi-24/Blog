@@ -132,6 +132,12 @@ public class PostServiceImpl implements PostService {
         return  postList.stream().map(this::entityToDto).collect(Collectors.toList());
     }
 
+    @Override
+    public List<PostDto> findByTitle(String keyword) {
+        List<Post> postList = postRepository.findByTitleContaining(keyword);
+        return postList.stream().map(this::entityToDto).collect(Collectors.toList());
+    }
+
     private PostDto entityToDto(Post post){
         return modelMapper.map(post, PostDto.class);
     }

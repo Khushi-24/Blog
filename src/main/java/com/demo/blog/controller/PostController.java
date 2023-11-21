@@ -56,4 +56,13 @@ public class PostController {
         List<PostDto> postDtoList = postService.getByCategory(categoryId);
         return new ResponseEntity<>(postDtoList, HttpStatus.OK);
     }
+
+    @GetMapping("/post/{keyword}/getByTitleLike")
+    public ResponseEntity<?> getByTitleLike(@PathVariable String keyword){
+        List<PostDto> postDtoList = postService.findByTitle(keyword);
+        if (postDtoList.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }else
+            return new ResponseEntity<>(postDtoList, HttpStatus.OK);
+    }
 }
